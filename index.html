@@ -38,7 +38,7 @@
 
     .app-container {
       width: 100%;
-      max-width: 440px;
+      max-width: 560px;
       display: flex;
       flex-direction: column;
       gap: 24px;
@@ -47,7 +47,7 @@
     /* Header */
     .header { text-align: center; }
     h1 {
-      font-size: 34px;
+      font-size: clamp(34px, 5vw, 56px);
       font-weight: 700;
       letter-spacing: -0.04em;
       color: #ffffff;
@@ -55,13 +55,13 @@
       line-height: 1.15;
     }
     .sub {
-      font-size: 15px;
+      font-size: clamp(16px, 2vw, 20px);
       color: var(--text-sub);
-      margin-bottom: 8px;
+      margin-bottom: 10px;
       line-height: 1.5;
     }
     .trust {
-      font-size: 12px;
+      font-size: clamp(13px, 1.5vw, 16px);
       color: var(--text-trust);
       letter-spacing: 0.01em;
     }
@@ -82,7 +82,7 @@
     }
     textarea {
       width: 100%;
-      min-height: 150px;
+      min-height: clamp(150px, 20vh, 220px);
       background: transparent;
       color: #ffffff;
       border: none;
@@ -109,8 +109,8 @@
     }
     .char-count, .btn-clear { pointer-events: auto; }
     .char-count {
-      font-size: 12px;
-      color: #666;
+      font-size: clamp(13px, 1.5vw, 16px);
+      color: #888;
       font-variant-numeric: tabular-nums;
     }
     .btn-clear {
@@ -167,7 +167,7 @@
       align-self: center;
     }
     .lang-label {
-      font-size: 11px;
+      font-size: clamp(12px, 1.2vw, 14px);
       font-weight: 600;
       letter-spacing: 0.06em;
       text-transform: uppercase;
@@ -184,7 +184,7 @@
       background: transparent;
       color: #ddd;
       border: none;
-      font-size: 14px;
+      font-size: clamp(14px, 1.5vw, 16px);
       font-weight: 500;
       outline: none;
       cursor: pointer;
@@ -209,12 +209,18 @@
     /* Footer */
     footer { text-align: center; }
     .bmac {
-      font-size: 12px;
-      color: #666;
+      font-size: clamp(13px, 1.5vw, 16px);
+      color: #888;
       text-decoration: none;
       transition: color 0.15s;
     }
     .bmac:hover { color: #aaa; }
+  @media (min-width: 768px) {
+      body { padding: 48px 32px; }
+      .app-container { gap: 28px; }
+      textarea { font-size: 24px; }
+      .btn-speak { padding: 22px; font-size: 18px; }
+    }
   </style>
 </head>
 <body>
@@ -245,7 +251,6 @@
       <select id="langSel">
         <option value="en-US">English</option>
         <option value="zh-CN">中文（普通话）</option>
-        <option value="zh-HK">粤语</option>
         <option value="es-ES">Español</option>
         <option value="fr-FR">Français</option>
         <option value="de-DE">Deutsch</option>
