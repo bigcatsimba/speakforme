@@ -2,22 +2,23 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Speak for Me - Lost your voice? We've got you.</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Speak for Me</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg: #0a0a0a;
-      --surface: #121212;
-      --border: rgba(255,255,255,0.06);
-      --border-focus: rgba(62,207,160,0.3);
+      --bg: #0f0f0f;
+      --surface: #1a1a1a;
+      --border: rgba(255,255,255,0.1);
+      --border-focus: rgba(62,207,160,0.4);
       --accent: #3ecfa0;
       --accent-gradient: linear-gradient(135deg, #3ecfa0 0%, #2aa881 100%);
-      --text: #f5f5f5;
-      --text-muted: #666666;
+      --text: #ffffff;
+      --text-sub: #aaaaaa;
+      --text-trust: #888888;
       --f: 'Inter', system-ui, -apple-system, sans-serif;
     }
 
@@ -30,8 +31,7 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 24px;
-      overflow-x: hidden;
+      padding: 32px 24px;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
     }
@@ -44,53 +44,47 @@
       gap: 24px;
     }
 
+    /* Header */
     .header { text-align: center; }
     h1 {
-      font-size: 32px;
+      font-size: 34px;
       font-weight: 700;
       letter-spacing: -0.04em;
-      margin-bottom: 8px;
-      background: linear-gradient(to bottom, #ffffff 50%, #a3a3a3 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+      color: #ffffff;
+      margin-bottom: 10px;
+      line-height: 1.15;
     }
     .sub {
-      font-size: 14px;
-      color: #888888;
-      letter-spacing: -0.01em;
-      margin-bottom: 6px;
+      font-size: 15px;
+      color: var(--text-sub);
+      margin-bottom: 8px;
+      line-height: 1.5;
     }
     .trust {
-      font-size: 11px;
-      color: #777;
-      letter-spacing: 0.02em;
+      font-size: 12px;
+      color: var(--text-trust);
+      letter-spacing: 0.01em;
     }
 
-    .workspace {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
+    /* Input card */
     .input-card {
       position: relative;
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 20px;
       padding: 20px 20px 52px 20px;
-      transition: border-color 0.25s ease, box-shadow 0.25s ease;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+      transition: border-color 0.2s;
       cursor: text;
     }
     .input-card:focus-within {
       border-color: var(--border-focus);
-      box-shadow: 0 10px 40px rgba(62,207,160,0.02);
     }
     textarea {
       width: 100%;
       min-height: 150px;
       background: transparent;
-      color: var(--text);
+      color: #ffffff;
       border: none;
       font-size: 22px;
       font-weight: 400;
@@ -100,8 +94,8 @@
       font-family: var(--f);
       -webkit-tap-highlight-color: transparent;
     }
-    textarea::placeholder { color: #2a2a2a; }
-    textarea::-webkit-scrollbar { width: 0; background: transparent; }
+    textarea::-webkit-scrollbar { width: 0; }
+    textarea::placeholder { color: #444; }
 
     .card-footer {
       position: absolute;
@@ -114,99 +108,111 @@
       pointer-events: none;
     }
     .char-count, .btn-clear { pointer-events: auto; }
-
     .char-count {
-      font-size: 11px;
-      color: var(--text-muted);
+      font-size: 12px;
+      color: #666;
       font-variant-numeric: tabular-nums;
-      font-weight: 500;
     }
     .btn-clear {
       background: transparent;
       border: none;
-      color: var(--text-muted);
-      font-size: 12px;
+      color: #666;
+      font-size: 13px;
       font-weight: 500;
       cursor: pointer;
-      transition: color 0.15s ease;
       font-family: var(--f);
       touch-action: manipulation;
       -webkit-tap-highlight-color: transparent;
+      transition: color 0.15s;
     }
     .btn-clear:hover { color: #f43f5e; }
 
+    /* Speak button */
     .btn-speak {
       width: 100%;
       background: var(--accent-gradient);
       color: #020a07;
       border: none;
       border-radius: 16px;
-      padding: 18px;
-      font-size: 16px;
+      padding: 19px;
+      font-size: 17px;
       font-weight: 600;
       letter-spacing: -0.01em;
       cursor: pointer;
       font-family: var(--f);
-      transition: transform 0.1s cubic-bezier(0.4,0,0.2,1), opacity 0.15s ease;
-      box-shadow: 0 4px 24px rgba(62,207,160,0.12);
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+      transition: transform 0.1s, opacity 0.15s;
+      box-shadow: 0 4px 20px rgba(62,207,160,0.2);
     }
-    .btn-speak:hover { opacity: 0.95; }
     .btn-speak:active { transform: scale(0.975); }
+    .btn-speak:hover { opacity: 0.92; }
     .btn-speak.speaking {
       background: transparent;
       color: var(--accent);
-      border: 1px solid rgba(62,207,160,0.4);
+      border: 1px solid rgba(62,207,160,0.5);
       box-shadow: none;
     }
 
-    .settings-bar {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      background: rgba(255,255,255,0.01);
-      padding: 10px 14px;
-      border-radius: 16px;
+    /* Language selector */
+    .lang-wrap {
+      background: var(--surface);
       border: 1px solid var(--border);
-    }
-    .setting-item {
-      display: flex;
-      flex-direction: column;
-      gap: 3px;
+      border-radius: 14px;
+      padding: 4px 6px;
+      display: inline-flex;
       align-items: center;
+      justify-content: center;
+      gap: 6px;
+      align-self: center;
     }
-    .setting-label {
-      font-size: 9px;
+    .lang-label {
+      font-size: 11px;
       font-weight: 600;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.06em;
       text-transform: uppercase;
-      color: #777;
+      color: #888;
+      white-space: nowrap;
+      padding-left: 6px;
+    }
+    .lang-select-wrap {
+      position: relative;
+      flex: 1;
     }
     select {
+      width: 100%;
       background: transparent;
-      color: #bbb;
+      color: #ddd;
       border: none;
-      font-size: 13px;
+      font-size: 14px;
       font-weight: 500;
       outline: none;
       cursor: pointer;
-      width: 100%;
-      text-align: center;
-      text-align-last: center;
-      transition: color 0.15s ease;
       font-family: var(--f);
+      padding: 10px 28px 10px 8px;
       -webkit-appearance: none;
       -moz-appearance: none;
       appearance: none;
+      -webkit-tap-highlight-color: transparent;
     }
-    select:hover { color: var(--text); }
     select:focus { color: var(--accent); }
+    .select-arrow {
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none;
+      color: #888;
+      font-size: 10px;
+    }
 
+    /* Footer */
     footer { text-align: center; }
     .bmac {
       font-size: 12px;
-      color: var(--text-muted);
+      color: #666;
       text-decoration: none;
-      transition: color 0.15s ease;
+      transition: color 0.15s;
     }
     .bmac:hover { color: #aaa; }
   </style>
@@ -221,7 +227,7 @@
     <p class="trust">Free &middot; No sign-up &middot; Works instantly</p>
   </header>
 
-  <main class="workspace">
+  <main>
     <div class="input-card" id="cardContainer">
       <textarea id="txt" placeholder="Type here…" maxlength="300" oninput="onInput()" autofocus></textarea>
       <div class="card-footer">
@@ -229,15 +235,16 @@
         <button class="btn-clear" onclick="clearAll(event)">Clear</button>
       </div>
     </div>
-    <button class="btn-speak" id="speakBtn" onclick="speak()">Speak</button>
   </main>
 
-  <section class="settings-bar">
-    <div class="setting-item">
-      <span class="setting-label">Language</span>
+  <button class="btn-speak" id="speakBtn" onclick="speak()">Speak</button>
+
+  <div class="lang-wrap">
+    <span class="lang-label">Language</span>
+    <div class="lang-select-wrap">
       <select id="langSel">
         <option value="en-US">English</option>
-        <option value="zh-CN">中文</option>
+        <option value="zh-CN">中文（普通话）</option>
         <option value="zh-HK">粤语</option>
         <option value="es-ES">Español</option>
         <option value="fr-FR">Français</option>
@@ -246,15 +253,9 @@
         <option value="ko-KR">한국어</option>
         <option value="pt-BR">Português</option>
       </select>
+      <span class="select-arrow">▼</span>
     </div>
-    <div class="setting-item">
-      <span class="setting-label">Voice</span>
-      <select id="voiceSel">
-        <option value="female">Female</option>
-        <option value="male">Male</option>
-      </select>
-    </div>
-  </section>
+  </div>
 
   <footer>
     <a class="bmac" href="https://buymeacoffee.com/roomymate" target="_blank" rel="noopener">
@@ -275,37 +276,27 @@
 
   if (synth) {
     loadVoices();
-    if (synth.onvoiceschanged !== undefined) {
-      synth.onvoiceschanged = loadVoices;
-    }
+    if (synth.onvoiceschanged !== undefined) synth.onvoiceschanged = loadVoices;
     setTimeout(loadVoices, 300);
   }
 
   document.getElementById('cardContainer').addEventListener('click', function(e) {
-    if (e.target !== document.getElementById('txt') && !e.target.classList.contains('btn-clear')) {
+    if (!e.target.classList.contains('btn-clear')) {
       document.getElementById('txt').focus();
     }
   });
 
   function onInput() {
-    const len = document.getElementById('txt').value.length;
-    document.getElementById('charCount').textContent = len + ' / 300';
+    document.getElementById('charCount').textContent = document.getElementById('txt').value.length + ' / 300';
   }
 
-  function getBestVoice(lang, gender) {
-    if (!voices || voices.length === 0) loadVoices();
+  function getBestVoice(lang) {
+    if (!voices.length) loadVoices();
     const langCode = lang.split('-')[0];
-    const femaleKeywords = ['female','woman','girl','zira','hazel','susan','karen','samantha','victoria','fiona','moira','veena','allison','ava','xiaoxiao','mei'];
-    const maleKeywords   = ['male','man','david','mark','james','daniel','tom','lee','rishi','fred','yunyang'];
-    const keywords = gender === 'female' ? femaleKeywords : maleKeywords;
-
     let pool = voices.filter(v => v.lang.replace('_','-') === lang);
     if (!pool.length) pool = voices.filter(v => v.lang.startsWith(langCode));
     if (!pool.length) return null;
-
-    const match = pool.find(v => keywords.some(k => v.name.toLowerCase().includes(k)));
-    if (match) return match;
-    return gender === 'female' ? pool[0] : pool[pool.length - 1];
+    return pool[0];
   }
 
   function setSpeaking(on) {
@@ -316,30 +307,21 @@
 
   function speak() {
     if (!synth) return;
-
-    if (synth.speaking) {
-      synth.cancel();
-      setSpeaking(false);
-      return;
-    }
+    if (synth.speaking) { synth.cancel(); setSpeaking(false); return; }
 
     const text = document.getElementById('txt').value.trim();
     if (!text) return;
 
-    const lang   = document.getElementById('langSel').value;
-    const gender = document.getElementById('voiceSel').value;
-    const voice  = getBestVoice(lang, gender);
-
-    const utt = new SpeechSynthesisUtterance(text);
+    const lang  = document.getElementById('langSel').value;
+    const voice = getBestVoice(lang);
+    const utt   = new SpeechSynthesisUtterance(text);
     utt.lang = lang;
     utt.rate = 0.95;
     if (voice) utt.voice = voice;
 
     utt.onstart = () => setSpeaking(true);
     utt.onend   = () => setSpeaking(false);
-    utt.onerror = (e) => {
-      if (e.error !== 'interrupted') setSpeaking(false);
-    };
+    utt.onerror = (e) => { if (e.error !== 'interrupted') setSpeaking(false); };
 
     synth.speak(utt);
   }
