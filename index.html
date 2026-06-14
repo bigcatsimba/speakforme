@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Speak for Me - Lost your voice? We've got you.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0a0a0a;
+      --surface: #121212;
+      --border: rgba(255,255,255,0.06);
+      --border-focus: rgba(62,207,160,0.3);
+      --accent: #3ecfa0;
+      --accent-gradient: linear-gradient(135deg, #3ecfa0 0%, #2aa881 100%);
+      --text: #f5f5f5;
+      --text-muted: #666666;
+      --f: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--f);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 440px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .header { text-align: center; }
+    h1 {
+      font-size: 32px;
+      font-weight: 700;
+      letter-spacing: -0.04em;
+      margin-bottom: 8px;
+      background: linear-gradient(to bottom, #ffffff 50%, #a3a3a3 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .sub {
+      font-size: 14px;
+      color: #888888;
+      letter-spacing: -0.01em;
+      margin-bottom: 6px;
+    }
+    .trust {
+      font-size: 11px;
+      color: #777;
+      letter-spacing: 0.02em;
+    }
+
+    .workspace {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .input-card {
+      position: relative;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 20px 20px 52px 20px;
+      transition: border-color 0.25s ease, box-shadow 0.25s ease;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+      cursor: text;
+    }
+    .input-card:focus-within {
+      border-color: var(--border-focus);
+      box-shadow: 0 10px 40px rgba(62,207,160,0.02);
+    }
+    textarea {
+      width: 100%;
+      min-height: 150px;
+      background: transparent;
+      color: var(--text);
+      border: none;
+      font-size: 22px;
+      font-weight: 400;
+      line-height: 1.45;
+      resize: none;
+      outline: none;
+      font-family: var(--f);
+      -webkit-tap-highlight-color: transparent;
+    }
+    textarea::placeholder { color: #2a2a2a; }
+    textarea::-webkit-scrollbar { width: 0; background: transparent; }
+
+    .card-footer {
+      position: absolute;
+      bottom: 16px;
+      left: 20px;
+      right: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      pointer-events: none;
+    }
+    .char-count, .btn-clear { pointer-events: auto; }
+
+    .char-count {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-variant-numeric: tabular-nums;
+      font-weight: 500;
+    }
+    .btn-clear {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: color 0.15s ease;
+      font-family: var(--f);
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .btn-clear:hover { color: #f43f5e; }
+
+    .btn-speak {
+      width: 100%;
+      background: var(--accent-gradient);
+      color: #020a07;
+      border: none;
+      border-radius: 16px;
+      padding: 18px;
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      cursor: pointer;
+      font-family: var(--f);
+      transition: transform 0.1s cubic-bezier(0.4,0,0.2,1), opacity 0.15s ease;
+      box-shadow: 0 4px 24px rgba(62,207,160,0.12);
+    }
+    .btn-speak:hover { opacity: 0.95; }
+    .btn-speak:active { transform: scale(0.975); }
+    .btn-speak.speaking {
+      background: transparent;
+      color: var(--accent);
+      border: 1px solid rgba(62,207,160,0.4);
+      box-shadow: none;
+    }
+
+    .settings-bar {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      background: rgba(255,255,255,0.01);
+      padding: 10px 14px;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+    }
+    .setting-item {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      align-items: center;
+    }
+    .setting-label {
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: #777;
+    }
+    select {
+      background: transparent;
+      color: #bbb;
+      border: none;
+      font-size: 13px;
+      font-weight: 500;
+      outline: none;
+      cursor: pointer;
+      width: 100%;
+      text-align: center;
+      text-align-last: center;
+      transition: color 0.15s ease;
+      font-family: var(--f);
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+    }
+    select:hover { color: var(--text); }
+    select:focus { color: var(--accent); }
+
+    footer { text-align: center; }
+    .bmac {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+    .bmac:hover { color: #aaa; }
+  </style>
+</head>
+<body>
+
+<div class="app-container">
+
+  <header class="header">
+    <h1>Lost your voice?</h1>
+    <p class="sub">Type anything. Your phone does the talking.</p>
+    <p class="trust">Free &middot; No sign-up &middot; Works instantly</p>
+  </header>
+
+  <main class="workspace">
+    <div class="input-card" id="cardContainer">
+      <textarea id="txt" placeholder="Type here…" maxlength="300" oninput="onInput()" autofocus></textarea>
+      <div class="card-footer">
+        <span class="char-count" id="charCount">0 / 300</span>
+        <button class="btn-clear" onclick="clearAll(event)">Clear</button>
+      </div>
+    </div>
+    <button class="btn-speak" id="speakBtn" onclick="speak()">Speak</button>
+  </main>
+
+  <section class="settings-bar">
+    <div class="setting-item">
+      <span class="setting-label">Language</span>
+      <select id="langSel">
+        <option value="en-US">English</option>
+        <option value="zh-CN">中文</option>
+        <option value="zh-HK">粤语</option>
+        <option value="es-ES">Español</option>
+        <option value="fr-FR">Français</option>
+        <option value="de-DE">Deutsch</option>
+        <option value="ja-JP">日本語</option>
+        <option value="ko-KR">한국어</option>
+        <option value="pt-BR">Português</option>
+      </select>
+    </div>
+    <div class="setting-item">
+      <span class="setting-label">Voice</span>
+      <select id="voiceSel">
+        <option value="female">Female</option>
+        <option value="male">Male</option>
+      </select>
+    </div>
+  </section>
+
+  <footer>
+    <a class="bmac" href="https://buymeacoffee.com/roomymate" target="_blank" rel="noopener">
+      If this helped, buy me a coffee ☕
+    </a>
+  </footer>
+
+</div>
+
+<script>
+  const synth = window.speechSynthesis;
+  let voices = [];
+
+  function loadVoices() {
+    if (!synth) return;
+    voices = synth.getVoices();
+  }
+
+  if (synth) {
+    loadVoices();
+    if (synth.onvoiceschanged !== undefined) {
+      synth.onvoiceschanged = loadVoices;
+    }
+    setTimeout(loadVoices, 300);
+  }
+
+  document.getElementById('cardContainer').addEventListener('click', function(e) {
+    if (e.target !== document.getElementById('txt') && !e.target.classList.contains('btn-clear')) {
+      document.getElementById('txt').focus();
+    }
+  });
+
+  function onInput() {
+    const len = document.getElementById('txt').value.length;
+    document.getElementById('charCount').textContent = len + ' / 300';
+  }
+
+  function getBestVoice(lang, gender) {
+    if (!voices || voices.length === 0) loadVoices();
+    const langCode = lang.split('-')[0];
+    const femaleKeywords = ['female','woman','girl','zira','hazel','susan','karen','samantha','victoria','fiona','moira','veena','allison','ava','xiaoxiao','mei'];
+    const maleKeywords   = ['male','man','david','mark','james','daniel','tom','lee','rishi','fred','yunyang'];
+    const keywords = gender === 'female' ? femaleKeywords : maleKeywords;
+
+    let pool = voices.filter(v => v.lang.replace('_','-') === lang);
+    if (!pool.length) pool = voices.filter(v => v.lang.startsWith(langCode));
+    if (!pool.length) return null;
+
+    const match = pool.find(v => keywords.some(k => v.name.toLowerCase().includes(k)));
+    if (match) return match;
+    return gender === 'female' ? pool[0] : pool[pool.length - 1];
+  }
+
+  function setSpeaking(on) {
+    const btn = document.getElementById('speakBtn');
+    btn.textContent = on ? 'Stop' : 'Speak';
+    btn.classList.toggle('speaking', on);
+  }
+
+  function speak() {
+    if (!synth) return;
+
+    if (synth.speaking) {
+      synth.cancel();
+      setSpeaking(false);
+      return;
+    }
+
+    const text = document.getElementById('txt').value.trim();
+    if (!text) return;
+
+    const lang   = document.getElementById('langSel').value;
+    const gender = document.getElementById('voiceSel').value;
+    const voice  = getBestVoice(lang, gender);
+
+    const utt = new SpeechSynthesisUtterance(text);
+    utt.lang = lang;
+    utt.rate = 0.95;
+    if (voice) utt.voice = voice;
+
+    utt.onstart = () => setSpeaking(true);
+    utt.onend   = () => setSpeaking(false);
+    utt.onerror = (e) => {
+      if (e.error !== 'interrupted') setSpeaking(false);
+    };
+
+    synth.speak(utt);
+  }
+
+  function clearAll(e) {
+    if (e) e.stopPropagation();
+    document.getElementById('txt').value = '';
+    document.getElementById('charCount').textContent = '0 / 300';
+    if (synth) synth.cancel();
+    setSpeaking(false);
+  }
+</script>
+
+</body>
+</html>
