@@ -215,7 +215,8 @@
       transition: color 0.15s;
     }
     .bmac:hover { color: #aaa; }
-  @media (min-width: 768px) {
+
+    @media (min-width: 768px) {
       body { padding: 48px 32px; }
       .app-container { gap: 28px; }
       textarea { font-size: 24px; }
@@ -228,9 +229,9 @@
 <div class="app-container">
 
   <header class="header">
-    <h1>Lost your voice?</h1>
-    <p class="sub">Type anything. Your phone does the talking.</p>
-    <p class="trust">Free &middot; No sign-up &middot; Works instantly</p>
+    <h1 id="title">Lost your voice?</h1>
+    <p class="sub" id="subtitle">Type anything. Your phone does the talking.</p>
+    <p class="trust" id="trust">Free &middot; No sign-up &middot; Works instantly</p>
   </header>
 
   <main>
@@ -238,7 +239,7 @@
       <textarea id="txt" placeholder="Type here…" maxlength="300" oninput="onInput()" autofocus></textarea>
       <div class="card-footer">
         <span class="char-count" id="charCount">0 / 300</span>
-        <button class="btn-clear" onclick="clearAll(event)">Clear</button>
+        <button class="btn-clear" id="clearBtn" onclick="clearAll(event)">Clear</button>
       </div>
     </div>
   </main>
@@ -246,9 +247,10 @@
   <button class="btn-speak" id="speakBtn" onclick="speak()">Speak</button>
 
   <div class="lang-wrap">
-    <span class="lang-label">Language</span>
+    <span class="lang-label" id="langLabel">Language</span>
     <div class="lang-select-wrap">
       <select id="langSel">
+        <option value="auto">Auto</option>
         <option value="en-US">English</option>
         <option value="zh-CN">中文（普通话）</option>
         <option value="es-ES">Español</option>
@@ -263,7 +265,7 @@
   </div>
 
   <footer>
-    <a class="bmac" href="https://buymeacoffee.com/roomymate" target="_blank" rel="noopener">
+    <a class="bmac" id="coffeeLink" href="https://buymeacoffee.com/roomymate" target="_blank" rel="noopener">
       If this helped, buy me a coffee ☕
     </a>
   </footer>
@@ -273,6 +275,22 @@
 <script>
   const synth = window.speechSynthesis;
   let voices = [];
+
+  const supportedLangs = [
+    'en-US', 'zh-CN', 'es-ES', 'fr-FR', 'de-DE', 'ja-JP', 'ko-KR', 'pt-BR'
+  ];
+
+  // 多语言文案字典
+  const i18n = {
+    en: { pageTitle: 'Speak for Me', title: 'Lost your voice?', subtitle: 'Type anything. Your phone does the talking.', trust: 'Free · No sign-up · Works instantly', placeholder: 'Type here…', clear: 'Clear', speak: 'Speak', stop: 'Stop', language: 'Language', auto: 'Auto', coffee: 'If this helped, buy me a coffee ☕' },
+    zh: { pageTitle: '替我说话', title: '说不出话了？', subtitle: '输入任何内容，让手机替你说。', trust: '免费 · 无需注册 · 打开即用', placeholder: '在这里输入…', clear: '清空', speak: '朗读', stop: '停止', language: '语言', auto: '自动', coffee: '如果这个工具帮到了你，请我喝杯咖啡 ☕' },
+    es: { pageTitle: 'Habla por mí', title: '¿Has perdido la voz?', subtitle: 'Escribe lo que quieras. Tu móvil hablará por ti.', trust: 'Gratis · Sin registro · Funciona al instante', placeholder: 'Escribe aquí…', clear: 'Borrar', speak: 'Hablar', stop: 'Detener', language: 'Idioma', auto: 'Automático', coffee: 'Si te ayudó, invítame a un café ☕' },
+    fr: { pageTitle: 'Parle pour moi', title: 'Vous avez perdu la voix ?', subtitle: 'Tapez ce que vous voulez. Votre téléphone parlera pour vous.', trust: 'Gratuit · Sans inscription · Instantané', placeholder: 'Tapez ici…', clear: 'Effacer', speak: 'Parler', stop: 'Arrêter', language: 'Langue', auto: 'Auto', coffee: 'Si cela vous a aidé, offrez-moi un café ☕' },
+    de: { pageTitle: 'Sprich für mich', title: 'Hast du deine Stimme verloren?', subtitle: 'Tippe etwas ein. Dein Handy spricht für dich.', trust: 'Kostenlos · Keine Anmeldung · Sofort nutzbar', placeholder: 'Hier eingeben…', clear: 'Löschen', speak: 'Sprechen', stop: 'Stopp', language: 'Sprache', auto: 'Auto', coffee: 'Wenn es geholfen hat, spendiere mir einen Kaffee ☕' },
+    ja: { pageTitle: '代わりに話す', title: '声が出ませんか？', subtitle: '入力した文字を、あなたのスマホが話します。', trust: '無料 · 登録不要 · すぐ使える', placeholder: 'ここに入力…', clear: 'クリア', speak: '話す', stop: '停止', language: '言語', auto: '自動', coffee: '役に立ったらコーヒーをごちそうしてください ☕' },
+    ko: { pageTitle: '대신 말해줘', title: '목소리가 안 나오나요?', subtitle: '아무 말이나 입력하세요. 휴대폰이 대신 말해줍니다.', trust: '무료 · 가입 불필요 · 바로 사용 가능', placeholder: '여기에 입력하세요…', clear: '지우기', speak: '말하기', stop: '중지', language: '언어', auto: '자동', coffee: '도움이 되었다면 커피 한 잔 부탁해요 ☕' },
+    pt: { pageTitle: 'Fale por mim', title: 'Perdeu a voz?', subtitle: 'Digite qualquer coisa. Seu celular fala por você.', trust: 'Grátis · Sem cadastro · Funciona na hora', placeholder: 'Digite aqui…', clear: 'Limpar', speak: 'Falar', stop: 'Parar', language: 'Idioma', auto: 'Automático', coffee: 'Se isso te ajudou, me pague um café ☕' }
+  };
 
   function loadVoices() {
     if (!synth) return;
@@ -285,6 +303,71 @@
     setTimeout(loadVoices, 300);
   }
 
+  function normalizeLangTag(tag) {
+    return (tag || '').replace('_', '-').toLowerCase();
+  }
+
+  // 检测手机/浏览器的最佳适配语言
+  function findBestSupportedLang() {
+    const browserLangs = Array.isArray(navigator.languages) && navigator.languages.length
+      ? navigator.languages
+      : [navigator.language || 'en-US'];
+
+    for (const raw of browserLangs) {
+      const lang = normalizeLangTag(raw);
+      const exact = supportedLangs.find(l => normalizeLangTag(l) === lang);
+      if (exact) return exact;
+
+      const base = lang.split('-')[0];
+      const baseMatch = supportedLangs.find(l => normalizeLangTag(l).startsWith(base));
+      if (baseMatch) return baseMatch;
+    }
+    return 'en-US'; // 兜底英文
+  }
+
+  function getCurrentUiLang() {
+    const selected = document.getElementById('langSel').value;
+    const actual = selected === 'auto' ? findBestSupportedLang() : selected;
+    return actual.split('-')[0];
+  }
+
+  function t(key) {
+    const uiLang = getCurrentUiLang();
+    const dict = i18n[uiLang] || i18n.en;
+    return dict[key] || i18n.en[key] || '';
+  }
+
+  function updateCharCount() {
+    const len = document.getElementById('txt').value.length;
+    document.getElementById('charCount').textContent = `${len} / 300`;
+  }
+
+  function setSpeaking(on) {
+    const btn = document.getElementById('speakBtn');
+    btn.textContent = on ? t('stop') : t('speak');
+    btn.classList.toggle('speaking', on);
+  }
+
+  // 根据当前语言重新渲染所有 UI 文本
+  function applyTranslations() {
+    document.title = t('pageTitle');
+    document.documentElement.lang = getCurrentUiLang();
+
+    document.getElementById('title').textContent = t('title');
+    document.getElementById('subtitle').textContent = t('subtitle');
+    document.getElementById('trust').textContent = t('trust');
+    document.getElementById('txt').placeholder = t('placeholder');
+    document.getElementById('clearBtn').textContent = t('clear');
+    document.getElementById('langLabel').textContent = t('language');
+    document.getElementById('coffeeLink').textContent = t('coffee');
+
+    const autoOption = document.querySelector('#langSel option[value="auto"]');
+    if (autoOption) autoOption.textContent = t('auto');
+
+    setSpeaking(synth && synth.speaking);
+    updateCharCount();
+  }
+
   document.getElementById('cardContainer').addEventListener('click', function(e) {
     if (!e.target.classList.contains('btn-clear')) {
       document.getElementById('txt').focus();
@@ -292,41 +375,51 @@
   });
 
   function onInput() {
-    document.getElementById('charCount').textContent = document.getElementById('txt').value.length + ' / 300';
+    updateCharCount();
   }
 
   function getBestVoice(lang) {
     if (!voices.length) loadVoices();
-    const langCode = lang.split('-')[0];
-    let pool = voices.filter(v => v.lang.replace('_','-') === lang);
-    if (!pool.length) pool = voices.filter(v => v.lang.startsWith(langCode));
-    if (!pool.length) return null;
-    return pool[0];
+    const normalizedTarget = normalizeLangTag(lang);
+    const targetBase = normalizedTarget.split('-')[0];
+
+    let pool = voices.filter(v => normalizeLangTag(v.lang) === normalizedTarget);
+    if (!pool.length) pool = voices.filter(v => normalizeLangTag(v.lang).startsWith(targetBase));
+    return pool.length ? pool[0] : null;
   }
 
-  function setSpeaking(on) {
-    const btn = document.getElementById('speakBtn');
-    btn.textContent = on ? 'Stop' : 'Speak';
-    btn.classList.toggle('speaking', on);
+  function getSpeakLang() {
+    const selected = document.getElementById('langSel').value;
+    return selected === 'auto' ? findBestSupportedLang() : selected;
   }
 
   function speak() {
     if (!synth) return;
-    if (synth.speaking) { synth.cancel(); setSpeaking(false); return; }
+
+    if (synth.speaking) {
+      synth.cancel();
+      setSpeaking(false);
+      return;
+    }
 
     const text = document.getElementById('txt').value.trim();
     if (!text) return;
 
-    const lang  = document.getElementById('langSel').value;
+    synth.cancel(); // 针对 iOS Safari 的防死锁处理
+
+    const lang = getSpeakLang();
     const voice = getBestVoice(lang);
-    const utt   = new SpeechSynthesisUtterance(text);
+    const utt = new SpeechSynthesisUtterance(text);
+
     utt.lang = lang;
     utt.rate = 0.95;
     if (voice) utt.voice = voice;
 
     utt.onstart = () => setSpeaking(true);
-    utt.onend   = () => setSpeaking(false);
-    utt.onerror = (e) => { if (e.error !== 'interrupted') setSpeaking(false); };
+    utt.onend = () => setSpeaking(false);
+    utt.onerror = (e) => {
+      if (e.error !== 'interrupted') setSpeaking(false);
+    };
 
     synth.speak(utt);
   }
@@ -334,10 +427,29 @@
   function clearAll(e) {
     if (e) e.stopPropagation();
     document.getElementById('txt').value = '';
-    document.getElementById('charCount').textContent = '0 / 300';
+    updateCharCount();
     if (synth) synth.cancel();
     setSpeaking(false);
   }
+
+  // 手动改变下拉选项时更新界面语言
+  document.getElementById('langSel').addEventListener('change', () => {
+    applyTranslations();
+  });
+
+  // 监听系统语言变更（如用户在手机设置里切了系统语言）
+  window.addEventListener('languagechange', () => {
+    if (document.getElementById('langSel').value === 'auto') {
+      applyTranslations();
+    }
+  });
+
+  // 初始化：默认选择 Auto 模式并渲染对应语言
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('langSel').value = 'auto';
+    loadVoices();
+    applyTranslations();
+  });
 </script>
 
 </body>
